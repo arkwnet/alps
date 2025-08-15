@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app
+    environment:
+      TZ: Asia/Tokyo
+    command: sh -c "cargo run"
+    tty: true
+    ports:
+      - 3300:8080
