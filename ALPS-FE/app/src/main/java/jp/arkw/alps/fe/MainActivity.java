@@ -102,15 +102,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         fileLog = new File(context.getFilesDir(), "log.txt");
 
-        items.add(new Item("SlimDot Volume.5", 100, R.drawable.book, -1));
+        items.add(new Item("SlimDot Volume.5", 50, R.drawable.book, -1));
         items.add(new Item("SlimDot Volume.4", 50, R.drawable.book, -1));
         items.add(new Item("異常頒布", 300, R.drawable.book, -1));
         items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, -1));
         items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第2版", 300, R.drawable.book, -1));
         items.add(new Item("もっと! 地下鉄 大名古屋", 100, R.drawable.gamecd, -1));
-        items.add(new Item("Train Driver 遠州鉄道編", 100, R.drawable.gamecd, R.drawable.dlcard1));
-        items.add(new Item("ハコ単", 100, R.drawable.gamecd, R.drawable.dlcard2));
-        items.add(new Item("ひらがないれーす", 100, R.drawable.gamecd, R.drawable.dlcard3));
 
         textView = findViewById(R.id.text_view);
         textViewIP = findViewById(R.id.text_view_ip);
@@ -235,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             boolean isMoney = intent.getBooleanExtra("IS_MONEY", false);
             // レシート印刷
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt1));
-            printText("コミックマーケット106\n2日目(日) 東6ホール サ31a\n", 0);
+            printText("COMIC BOX #1 配置番号03\n", 0);
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt2));
             printText("登録番号 T1810508644593\n", 2);
             Date date = new Date();
@@ -253,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
             printLine();
-            final int tax = (int) Math.floor(total / 1.1 * 0.1);
+            final int tax = (int) Math.round(total / 1.1 * 0.1);
             printDoubleText("小計", "￥ " + total);
             printDoubleText(" 内税 10%対象額", "￥ " + total);
             printDoubleText(" 内税 10%", "￥ " + tax);
