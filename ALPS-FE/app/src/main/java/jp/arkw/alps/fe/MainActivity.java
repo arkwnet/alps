@@ -232,7 +232,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             boolean isMoney = intent.getBooleanExtra("IS_MONEY", false);
             // レシート印刷
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt1));
-            printText("COMIC BOX #1 配置番号03\n", 0);
+            printText("おもしろ同人誌ﾊﾞｻﾞｰﾙ神保町2025秋\n", 0);
+            printText("ﾍﾞﾙｻｰﾙ神保町ｱﾈｯｸｽ ろ-26\n", 0);
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt2));
             printText("登録番号 T1810508644593\n", 2);
             Date date = new Date();
