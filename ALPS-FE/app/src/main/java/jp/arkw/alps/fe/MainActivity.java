@@ -102,12 +102,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         fileLog = new File(context.getFilesDir(), "log.txt");
 
-        items.add(new Item("SlimDot Volume.5", 50, R.drawable.book, -1));
-        items.add(new Item("SlimDot Volume.4", 50, R.drawable.book, -1));
-        items.add(new Item("異常頒布", 300, R.drawable.book, -1));
-        items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, -1));
-        items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第2版", 300, R.drawable.book, -1));
-        items.add(new Item("もっと! 地下鉄 大名古屋", 100, R.drawable.gamecd, -1));
+        items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞ!!", 500, R.drawable.book, R.drawable.qr4));
+        items.add(new Item("異常頒布", 300, R.drawable.book, R.drawable.qr3));
+        items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, R.drawable.qr1));
+        items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第2版", 300, R.drawable.book, R.drawable.qr2));
 
         textView = findViewById(R.id.text_view);
         textViewIP = findViewById(R.id.text_view_ip);
@@ -232,8 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             boolean isMoney = intent.getBooleanExtra("IS_MONEY", false);
             // レシート印刷
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt1));
-            printText("おもしろ同人誌ﾊﾞｻﾞｰﾙ神保町2025秋\n", 0);
-            printText("ﾍﾞﾙｻｰﾙ神保町ｱﾈｯｸｽ ろ-26\n", 0);
+            printText("技術書典19\nオフライン出展 (リアル会場) く07\n", 0);
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt2));
             printText("登録番号 T1810508644593\n", 2);
             Date date = new Date();
@@ -277,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (item.getPrint() != -1 && payment.contains(getResources().getString(R.string.payment_tbf)) == false) {
                         printText("\n------------ ｷ ﾘ ﾄ ﾘ ------------\n", 1);
                         printImage(BitmapFactory.decodeResource(getResources(), item.getPrint()));
+                        printText("[無断転載・公開禁止]\nダウンロード期限: 2025年12月31日\n読み取れない時はﾚｼｰﾄに記載の\n連絡先へお問い合わせ下さい\n", 1);
                     }
                 }
             }

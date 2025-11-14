@@ -25,6 +25,7 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.button_payment_id).setOnClickListener(this);
         findViewById(R.id.button_payment_ic).setOnClickListener(this);
         findViewById(R.id.button_payment_qr).setOnClickListener(this);
+        findViewById(R.id.button_payment_tbf).setOnClickListener(this);
         findViewById(R.id.button_payment_other).setOnClickListener(this);
         findViewById(R.id.button_cancel).setOnClickListener(this);
         Intent intent = getIntent();
@@ -71,6 +72,8 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
             finishPurchase(getString(R.string.payment_ic), total, 0, false);
         } else if (v.getId() == R.id.button_payment_qr) {
             finishPurchase(getString(R.string.payment_qr), total, 0, false);
+        } else if (v.getId() == R.id.button_payment_tbf) {
+            finishPurchase(getString(R.string.payment_tbf), total, 0, false);
         } else if (v.getId() == R.id.button_payment_other) {
             finishPurchase(getString(R.string.payment_other), total, 0, false);
         } else if (v.getId() == R.id.button_cancel) {
