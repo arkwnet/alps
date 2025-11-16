@@ -84,6 +84,15 @@ export default {
           this.imageHeight / 2 + 550
         )
       }
+      navigator.getBattery().then((battery) => {
+        this.context.font = '24px KosugiMaruRegular'
+        this.context.textAlign = 'left'
+        this.context.fillText(
+          'BATT: level=' + parseInt(battery.level * 100) + '%, charging=' + battery.charging,
+          10,
+          26
+        )
+      })
       const vm = this
       setTimeout(() => {
         vm.update()
