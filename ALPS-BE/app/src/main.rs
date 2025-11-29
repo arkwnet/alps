@@ -68,11 +68,17 @@ async fn main() -> std::io::Result<()> {
       .allow_any_header()
       .max_age(3600);
     App::new()
-    .wrap(cors).service(get_display).service(post_display).service(post_record)
+    .wrap(cors).service(get_now).service(get_display).service(post_display).service(post_record)
   })
   .bind("0.0.0.0:8080")
   .expect("").run()
   .await
+}
+
+#[get("/now")]
+async fn get_now() -> HttpResponse {
+  let local_datetime: DateTime<Local> = Local::now();
+  HttpResponse::Ok().content_type("text/plain").body(local_datetime.to_string())
 }
 
 #[get("/display")]
