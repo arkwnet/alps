@@ -95,6 +95,7 @@ async fn get_token() -> HttpResponse {
     };
     let _insert_token = insert_token(&_connection, &token);
     let serialized: String = serde_json::to_string(&token).unwrap();
+    let _ = discord_log(format!("[TOKEN] id={}", token.id).as_str()).await;
     HttpResponse::Ok().content_type("application/json").body(serialized)
   } else {
     HttpResponse::Ok().content_type("application/json").body("{}")
@@ -139,6 +140,7 @@ async fn post_record(receive: web::Json<Receive>) -> impl Responder {
         subtotal: subtotal
       };
       let _insert_sale = insert_sale(&_connection, &_sale);
+      let _ = discord_log(format!("[SALE] id={}, timestamp={}, name={}, quantity={}, subtotal={}", receive.id, timestamp, item.name, quantity, subtotal).as_str()).await;
     }
     let _payment = Payment {
       id: receive.id.clone(),
@@ -149,6 +151,7 @@ async fn post_record(receive: web::Json<Receive>) -> impl Responder {
       change: receive.change.parse::<u16>().unwrap()
     };
     let _insert_payment = insert_payment(&_connection, &_payment);
+    let _ = discord_log(format!("[PAYMENT] id={}, timestamp={}, method={}, total={}, cash={}, change={}", receive.id, timestamp, receive.payment, receive.total, receive.cash, receive.change).as_str()).await;
   }
   HttpResponse::Ok().body("")
 }
