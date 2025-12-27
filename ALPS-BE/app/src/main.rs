@@ -124,6 +124,7 @@ async fn post_token_verify(token: web::Json<TokenRx>) -> Result<HttpResponse, Er
 #[post("/record")]
 async fn post_record(receive: web::Json<Receive>) -> impl Responder {
   let db = open_db("./record.db");
+  let mut log = String::new();
   if let Ok(connection) = db {
     let _connection = connection;
     let local_datetime: DateTime<Local> = Local::now();
@@ -140,7 +141,7 @@ async fn post_record(receive: web::Json<Receive>) -> impl Responder {
         subtotal: subtotal
       };
       let _insert_sale = insert_sale(&_connection, &_sale);
-      let _ = discord_log(format!("[SALE] id={}, timestamp={}, name={}, quantity={}, subtotal={}", receive.id, timestamp, item.name, quantity, subtotal).as_str()).await;
+      log.push_str(format!("[SALE] id={}, timestamp={}, name={}, quantity={}, subtotal={}\n", receive.id, timestamp, item.name, quantity, subtotal).as_str());
     }
     let _payment = Payment {
       id: receive.id.clone(),
@@ -151,8 +152,9 @@ async fn post_record(receive: web::Json<Receive>) -> impl Responder {
       change: receive.change.parse::<u16>().unwrap()
     };
     let _insert_payment = insert_payment(&_connection, &_payment);
-    let _ = discord_log(format!("[PAYMENT] id={}, timestamp={}, method={}, total={}, cash={}, change={}", receive.id, timestamp, receive.payment, receive.total, receive.cash, receive.change).as_str()).await;
+    log.push_str(format!("[PAYMENT] id={}, timestamp={}, method={}, total={}, cash={}, change={}", receive.id, timestamp, receive.payment, receive.total, receive.cash, receive.change).as_str());
   }
+  let _ = discord_log(log.as_str()).await;
   HttpResponse::Ok().body("")
 }
 
