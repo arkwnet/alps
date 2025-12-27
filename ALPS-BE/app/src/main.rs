@@ -1,20 +1,25 @@
-use std::fs::File;
-use std::io::Read;
-use std::io::Write;
-use std::path::Path;
 use actix_cors::Cors;
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, Error, error::ErrorInternalServerError, HttpResponse, HttpServer, Responder};
 use chrono::DateTime;
 use chrono::Local;
-use rusqlite::{params, Connection, Result};
+use rusqlite::{params, Connection, OptionalExtension, Result};
 use serde::{Serialize, Deserialize};
+use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Display {
-  upper_left: String,
-  upper_right: String,
-  lower_left: String,
-  lower_right: String
+struct TokenTx {
+  id: String,
+  timestamp: i64
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct TokenRx {
+  id: String
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Status {
+  status: bool
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -55,12 +60,6 @@ struct Payment {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-  let path = Path::new("display.json");
-  if path.is_file() == false {
-    let mut file = File::create("display.json").unwrap();
-    let _write_all = file.write_all(String::from("{}").as_bytes());
-    let _flush = file.flush();
-  }
   HttpServer::new(|| {
     let cors = Cors::default()
       .allowed_origin("https://arkw.net")
@@ -68,7 +67,7 @@ async fn main() -> std::io::Result<()> {
       .allow_any_header()
       .max_age(3600);
     App::new()
-    .wrap(cors).service(get_now).service(get_display).service(post_display).service(post_record)
+    .wrap(cors).service(get_now).service(get_token).service(post_token).service(post_record)
   })
   .bind("0.0.0.0:8080")
   .expect("").run()
@@ -81,26 +80,46 @@ async fn get_now() -> HttpResponse {
   HttpResponse::Ok().content_type("text/plain").body(local_datetime.to_string())
 }
 
-#[get("/display")]
-async fn get_display() -> HttpResponse {
-  let mut file = File::open("display.json").unwrap();
-  let mut buf = String::new();
-  let _ = file.read_to_string(&mut buf);
-  HttpResponse::Ok().content_type("application/json").body(buf)
+#[get("/token")]
+async fn get_token() -> HttpResponse {
+  let db = open_db("./token.db");
+  if let Ok(connection) = db {
+    let _connection = connection;
+    let local_datetime: DateTime<Local> = Local::now();
+    let token = TokenTx {
+      id: Uuid::new_v4().to_string(),
+      timestamp: local_datetime.timestamp()
+    };
+    let _insert_token = insert_token(&_connection, &token);
+    let serialized: String = serde_json::to_string(&token).unwrap();
+    HttpResponse::Ok().content_type("application/json").body(serialized)
+  } else {
+    HttpResponse::Ok().content_type("application/json").body("{}")
+  }
 }
 
-#[post("/display")]
-async fn post_display(display: web::Json<Display>) -> impl Responder {
-  let serialized = serde_json::to_string(&display).unwrap();
-  let mut file = File::create("display.json").unwrap();
-  let _write_all = file.write_all(&serialized.as_bytes());
-  let _flush = file.flush();
-  HttpResponse::Ok().body("")
+#[post("/token")]
+async fn post_token(token: web::Json<TokenRx>) -> Result<HttpResponse, Error> {
+  let mut status = Status { status: false };
+  let connection = open_db("./token.db").map_err(|e| ErrorInternalServerError(e))?;
+  let row: Option<(String, i64)> = connection.query_row(
+    "SELECT id, timestamp FROM token WHERE id = ?1",
+    params![token.id],
+    |row| Ok((row.get(0)?, row.get(1)?)),
+  ).optional().map_err(|e| ErrorInternalServerError(e))?;
+  if let Some((_id, timestamp)) = row {
+    let now = Local::now().timestamp();
+    let diff = now - timestamp;
+    if (0..600).contains(&diff) {
+        status.status = true;
+    }
+  }
+  Ok(HttpResponse::Ok().json(status))
 }
 
 #[post("/record")]
 async fn post_record(receive: web::Json<Receive>) -> impl Responder {
-  let db = open_db();
+  let db = open_db("./record.db");
   if let Ok(connection) = db {
     let _connection = connection;
     let local_datetime: DateTime<Local> = Local::now();
@@ -131,11 +150,17 @@ async fn post_record(receive: web::Json<Receive>) -> impl Responder {
   HttpResponse::Ok().body("")
 }
 
-fn open_db() -> Result<Connection, rusqlite::Error> {
-  let path = "./record.db";
+fn open_db(path: &str) -> Result<Connection, rusqlite::Error> {
   let connection = Connection::open(&path)?;
   println!("{}", connection.is_autocommit());
   Ok(connection)
+}
+
+fn insert_token(connection: &Connection, token: &TokenTx) -> Result<usize, rusqlite::Error> {
+  return Ok(connection.execute(
+    "insert into token (id, timestamp) values (?1, ?2)",
+    params![token.id, token.timestamp]
+  )?);
 }
 
 fn insert_sale(connection: &Connection, sale: &Sale) -> Result<usize, rusqlite::Error> {
