@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.LinkAddress;
 import android.net.LinkProperties;
@@ -76,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int id = 0;
     private JSONObject display = new JSONObject();
 
+    private MediaPlayer mediaPlayerButton;
+    private MediaPlayer mediaPlayerVoice;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
         fileLog = new File(context.getFilesDir(), "log.txt");
+
+        mediaPlayerButton = MediaPlayer.create(this, R.raw.button);
+        mediaPlayerVoice = MediaPlayer.create(this, R.raw.voice);
 
         items.add(new Item("SlimDot Volume.6", 100, R.drawable.book, -1));
         items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, -1));
@@ -142,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listViewItem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int index, long l) {
+                playSound(mediaPlayerButton);
                 items.get(index).setQuantity(items.get(index).getQuantity() + 1);
                 update();
                 setCustomerDisplay(items.get(index).getName(), "" + items.get(index).getPrice(), "小計", "" + total);
@@ -175,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        playSound(mediaPlayerButton);
         if (v.getId() == R.id.button_purchase) {
             setCustomerDisplay("", "", "合計", "" + total);
             Intent intent = new Intent(getApplication(), PurchaseActivity.class);
@@ -218,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+        playSound(mediaPlayerButton);
         if (resultCode == RESULT_OK) {
             id++;
             if (id >= 10000) {
@@ -327,6 +337,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             sendPost("/record", json);
             clearQuantity();
+            playSound(mediaPlayerVoice);
         }
     }
 
@@ -500,6 +511,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (isGranted() == false){
             requestPermissions(PERMISSIONS, REQUEST_PERMISSION);
         }
+    }
+
+    private void playSound(MediaPlayer mediaPlayer) {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.seekTo(0);
+        }
+        mediaPlayer.start();
     }
 
     private boolean isGranted(){
