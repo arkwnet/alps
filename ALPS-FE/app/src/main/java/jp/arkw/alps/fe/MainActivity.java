@@ -102,10 +102,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         fileLog = new File(context.getFilesDir(), "log.txt");
 
-        items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞ!!", 500, R.drawable.book, R.drawable.qr4));
-        items.add(new Item("異常頒布", 300, R.drawable.book, R.drawable.qr3));
-        items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, R.drawable.qr1));
-        items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第2版", 300, R.drawable.book, R.drawable.qr2));
+        items.add(new Item("SlimDot Volume.6", 100, R.drawable.book, -1));
+        items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, -1));
+        items.add(new Item("もっと! 地下鉄 大名古屋", 100, R.drawable.gamecd, -1));
+        items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞ!!", 500, R.drawable.book, -1));
+        items.add(new Item("異常頒布", 300, R.drawable.book, -1));
+        items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, -1));
+        items.add(new Item("値引 100円", -100, R.drawable.discount, -1));
+        items.add(new Item("値引 50円", -50, R.drawable.discount, -1));
 
         textView = findViewById(R.id.text_view);
         textViewIP = findViewById(R.id.text_view_ip);
@@ -230,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             boolean isMoney = intent.getBooleanExtra("IS_MONEY", false);
             // レシート印刷
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt1));
-            printText("技術書典19\nオフライン出展 (リアル会場) く07\n", 0);
+            printText("コミックマーケット107\n2日目(水) 南1ホール l45b\n", 0);
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt2));
             printText("登録番号 T1810508644593\n", 2);
             Date date = new Date();
