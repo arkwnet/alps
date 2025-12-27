@@ -2,6 +2,8 @@ use actix_cors::Cors;
 use actix_web::{get, post, web, App, Error, error::ErrorInternalServerError, HttpResponse, HttpServer, Responder};
 use chrono::DateTime;
 use chrono::Local;
+use dotenv::dotenv;
+use reqwest::header::HeaderMap;
 use rusqlite::{params, Connection, OptionalExtension, Result};
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
@@ -60,6 +62,7 @@ struct Payment {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+  dotenv().ok();
   HttpServer::new(|| {
     let cors = Cors::default()
       .allowed_origin("https://arkw.net")
@@ -175,4 +178,15 @@ fn insert_payment(connection: &Connection, payment: &Payment) -> Result<usize, r
     "insert into payment (id, timestamp, method, total, cash, change) values (?1, ?2, ?3, ?4, ?5, ?6)",
     params![payment.id, payment.timestamp, payment.method, payment.total, payment.cash, payment.change]
   )?);
+}
+
+async fn discord_log(s: &str) -> Result<(), reqwest::Error> {
+  let url = dotenv::var("DISCORD_WEBHOOK_URL").unwrap();
+  let mut headers = HeaderMap::new();
+  headers.append("Content-Type", "application/json".parse().expect(""));
+  let payload = serde_json::json!({
+    "content": s
+  });
+  let _client = reqwest::Client::new().post(url).headers(headers).json(&payload).send().await?.error_for_status()?;
+  Ok(())
 }
