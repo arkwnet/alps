@@ -516,8 +516,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void playSound(MediaPlayer mediaPlayer) {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
-            mediaPlayer.seekTo(0);
         }
+        mediaPlayer.seekTo(0);
         mediaPlayer.start();
     }
 
