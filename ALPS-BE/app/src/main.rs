@@ -6,6 +6,7 @@ use dotenv::dotenv;
 use reqwest::header::HeaderMap;
 use rusqlite::{params, Connection, OptionalExtension, Result};
 use serde::{Serialize, Deserialize};
+use std::env;
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -70,7 +71,7 @@ async fn main() -> std::io::Result<()> {
       .allow_any_header()
       .max_age(3600);
     App::new()
-    .wrap(cors).service(get_now).service(get_token).service(post_token).service(post_record)
+    .wrap(cors).service(get_now).service(post_token_generate).service(post_token_verify).service(post_record)
   })
   .bind("0.0.0.0:8080")
   .expect("").run()
@@ -83,27 +84,26 @@ async fn get_now() -> HttpResponse {
   HttpResponse::Ok().content_type("text/plain").body(local_datetime.to_string())
 }
 
-#[get("/token")]
-async fn get_token() -> HttpResponse {
-  let db = open_db("./token.db");
-  if let Ok(connection) = db {
-    let _connection = connection;
-    let local_datetime: DateTime<Local> = Local::now();
-    let token = TokenTx {
-      id: Uuid::new_v4().to_string(),
-      timestamp: local_datetime.timestamp()
-    };
-    let _insert_token = insert_token(&_connection, &token);
-    let serialized: String = serde_json::to_string(&token).unwrap();
-    let _ = discord_log(format!("[TOKEN] id={}", token.id).as_str()).await;
-    HttpResponse::Ok().content_type("application/json").body(serialized)
-  } else {
-    HttpResponse::Ok().content_type("application/json").body("{}")
+#[post("/token/generate")]
+async fn post_token_generate(key: web::Json<TokenRx>) -> Result<HttpResponse, Error> {
+  let mut token = TokenTx { id: "".to_string(), timestamp: 0 };
+  let password = env::var("TOKEN_PASSWORD").unwrap();
+  if key.id == password {
+    let db = open_db("./token.db");
+    if let Ok(connection) = db {
+      let _connection = connection;
+      let local_datetime: DateTime<Local> = Local::now();
+      token.id = Uuid::new_v4().to_string();
+      token.timestamp = local_datetime.timestamp();
+      let _insert_token = insert_token(&_connection, &token);
+      let _ = discord_log(format!("[TOKEN] id={}, timestamp={}", token.id, token.timestamp).as_str()).await;
+    }
   }
+  Ok(HttpResponse::Ok().json(token))
 }
 
-#[post("/token")]
-async fn post_token(token: web::Json<TokenRx>) -> Result<HttpResponse, Error> {
+#[post("/token/verify")]
+async fn post_token_verify(token: web::Json<TokenRx>) -> Result<HttpResponse, Error> {
   let mut status = Status { status: false };
   let connection = open_db("./token.db").map_err(|e| ErrorInternalServerError(e))?;
   let row: Option<(String, i64)> = connection.query_row(
@@ -184,7 +184,7 @@ fn insert_payment(connection: &Connection, payment: &Payment) -> Result<usize, r
 }
 
 async fn discord_log(s: &str) -> Result<(), reqwest::Error> {
-  let url = dotenv::var("DISCORD_WEBHOOK_URL").unwrap();
+  let url = env::var("DISCORD_WEBHOOK_URL").unwrap();
   let mut headers = HeaderMap::new();
   headers.append("Content-Type", "application/json".parse().expect(""));
   let payload = serde_json::json!({
