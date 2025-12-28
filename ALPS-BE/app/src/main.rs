@@ -48,7 +48,7 @@ struct Sale {
   timestamp: String,
   name: String,
   quantity: u16,
-  subtotal: u16
+  subtotal: i16
 }
 
 #[derive(Debug)]
@@ -131,8 +131,8 @@ async fn post_record(receive: web::Json<Receive>) -> impl Responder {
     let timestamp: String = local_datetime.to_string();
     for item in &receive.items {
       let quantity: u16 = item.quantity.parse::<u16>().unwrap();
-      let price: u16 = item.price.parse::<u16>().unwrap();
-      let subtotal = quantity * price;
+      let price: i16 = item.price.parse::<i16>().unwrap();
+      let subtotal = quantity as i16 * price;
       let _sale = Sale {
         id: receive.id.clone(),
         timestamp: timestamp.clone(),
