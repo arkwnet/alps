@@ -10,11 +10,29 @@ const items = ref([
 const isMain = ref(true)
 const isFinish = ref(false)
 const isCover = ref(true)
+const token = ref('')
 const cart = ref([])
 const total = ref(0)
 
-onMounted(() => {
-  isCover.value = false
+onMounted(async () => {
+  try {
+    const response = await fetch('./backend/generate.php', {
+      method: 'GET',
+    })
+    if (!response.ok) {
+      alert('トークンの取得に失敗しました。画面を再読み込みしてください。')
+    } else {
+      const result = await response.json()
+      token.value = result.id
+      if (token.value == '') {
+        alert('トークンの取得に失敗しました。画面を再読み込みしてください。')
+      } else {
+        isCover.value = false
+      }
+    }
+  } catch (error) {
+    alert('トークンの取得に失敗しました。画面を再読み込みしてください。エラー内容: ' + error)
+  }
 })
 
 const getImageUrl = (id) => {
@@ -30,45 +48,48 @@ const onChange = () => {
 }
 
 const onSubmit = async () => {
-  isCover.value = true
-  let jsonArray = new Array()
-  for (let i = 0; i < cart.value.length; i++) {
-    jsonArray.push({
-      name: cart.value[i].name,
-      price: '' + cart.value[i].price,
-      quantity: '1',
-    })
-  }
-  let json = {
-    id: 'SELF',
-    items: jsonArray,
-    total: '' + total.value,
-    payment: '現金 (無人頒布)',
-    cash: '' + total.value,
-    change: '0',
-  }
-  try {
-    const response = await fetch('./backend/checkout.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(json),
-    })
-    const result = await response.json()
-    if (result.status != 0) {
-      isMain.value = false
-      isFinish.value = true
-    } else {
-      alert(
-        '通信エラーが発生しました。お手数ですが、もう一度お試しください。エラーコード: ' +
-          result.status,
-      )
+  if (window.confirm('購入処理を実行します。よろしいですか?')) {
+    isCover.value = true
+    let jsonArray = new Array()
+    for (let i = 0; i < cart.value.length; i++) {
+      jsonArray.push({
+        name: cart.value[i].name,
+        price: '' + cart.value[i].price,
+        quantity: '1',
+      })
     }
-    isCover.value = false
-  } catch (error) {
-    isCover.value = false
-    alert('通信エラーが発生しました。お手数ですが、もう一度お試しください。エラー内容: ' + error)
+    let json = {
+      id: 'SELF',
+      items: jsonArray,
+      total: '' + total.value,
+      payment: '現金 (無人頒布)',
+      cash: '' + total.value,
+      change: '0',
+      token: token.value,
+    }
+    try {
+      const response = await fetch('./backend/checkout.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(json),
+      })
+      const result = await response.json()
+      if (result.status == 0) {
+        isMain.value = false
+        isFinish.value = true
+      } else {
+        alert(
+          '通信エラーが発生しました。お手数ですが、もう一度お試しください。エラーコード: ' +
+            result.status,
+        )
+      }
+      isCover.value = false
+    } catch (error) {
+      isCover.value = false
+      alert('通信エラーが発生しました。お手数ですが、もう一度お試しください。エラー内容: ' + error)
+    }
   }
 }
 </script>

@@ -1,0 +1,3 @@
+<?php
+$BACKEND_URL = "";
+$TOKEN_PASSWORD = "";
