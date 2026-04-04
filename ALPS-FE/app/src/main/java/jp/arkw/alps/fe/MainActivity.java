@@ -9,11 +9,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.LinkAddress;
 import android.net.LinkProperties;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.View;
@@ -34,7 +37,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -80,6 +82,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MediaPlayer mediaPlayerButton;
     private MediaPlayer mediaPlayerVoice;
 
+    private Typeface typeface;
+    private Bitmap textBitmap;
+    private Canvas textCanvas;
+    private Paint textPaint;
+    private float textOffset;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +116,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mediaPlayerButton = MediaPlayer.create(this, R.raw.button);
         mediaPlayerVoice = MediaPlayer.create(this, R.raw.voice);
+
+        typeface = Typeface.createFromAsset(getAssets(), "JF-Dot-jiskan24h.ttf");
+        textBitmap = Bitmap.createBitmap(384, 32, Bitmap.Config.ARGB_8888);
+        textCanvas = new Canvas(textBitmap);
+        textPaint = new Paint();
+        textPaint.setColor(Color.BLACK);
+        textPaint.setTextSize(24f);
+        textPaint.setAntiAlias(false);
+        textPaint.setTypeface(typeface);
+        textOffset = -textPaint.getFontMetrics().ascent + 2;
 
         items.add(new Item("SlimDot Volume.6", 100, R.drawable.book, -1));
         items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, -1));
@@ -244,28 +262,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             boolean isMoney = intent.getBooleanExtra("IS_MONEY", false);
             // レシート印刷
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt1));
-            printText("コミックマーケット107\n2日目(水) 南1ホール l45b\n", 0);
+            printText("技術書典20\nオフライン出展 (リアル会場) お08", 0);
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt2));
-            printText("登録番号 T1810508644593\n", 2);
+            printText("登録番号 T1810508644593", 2);
             Date date = new Date();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd(E) HH:mm");
-            printText("レジ0001 " + simpleDateFormat.format(date) + "\n", 0);
-            printText("取" + String.format("%04d", id) + " 責: 01 荒川\n\n", 0);
+            printText("レジ0001 " + simpleDateFormat.format(date), 0);
+            printText("取" + String.format("%04d", id) + " 責: 01 荒川", 0);
+            printText("", 0);
             int total = 0;
             for (int i = 0; i < items.size(); i++) {
                 final Item item = items.get(i);
                 if (item.getQuantity() >= 1) {
-                    printText("" + item.getName() + " × " + item.getQuantity() + "\n", 0);
+                    printText("" + item.getName() + " × " + item.getQuantity(), 0);
                     final int subtotal = item.getPrice() * item.getQuantity();
                     total += subtotal;
-                    printText("" + subtotal + "\n", 2);
+                    printText("" + subtotal, 2);
                 }
             }
             printLine();
             final int tax = (int) Math.round(total / 1.1 * 0.1);
             printDoubleText("小計", "￥ " + total);
-            printDoubleText(" 内税 10%対象額", "￥ " + total);
-            printDoubleText(" 内税 10%", "￥ " + tax);
+            printDoubleText("　内税 10%対象額", "￥ " + total);
+            printDoubleText("　内税 10%", "￥ " + tax);
             printLine();
             printDoubleText("合計", "￥ " + total);
             if (isMoney == true) {
@@ -277,18 +296,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             printDoubleText("お釣り", "￥ " + change);
             printLine();
-            printText("X/Twitter: @arkw0\n", 0);
-            printText("Misskey: @arkw@mi.arkw.work\n", 0);
-            printText("Website: https://arkw.net/\n", 0);
-            printText("E-mail: mail@arkw.net\n", 0);
+            printText("X/Twitter: @arkw0", 0);
+            printText("Misskey: @arkw@mi.arkw.work", 0);
+            printText("Website: https://arkw.net/", 0);
+            printText("E-mail: mail@arkw.net", 0);
             // ダウンロードカードの印刷
             for (int i = 0; i < items.size(); i++) {
                 final Item item = items.get(i);
                 if (item.getQuantity() >= 1) {
                     if (item.getPrint() != -1 && payment.contains(getResources().getString(R.string.payment_tbf)) == false) {
-                        printText("\n------------ ｷ ﾘ ﾄ ﾘ ------------\n", 1);
+                        printText("------------ ｷ ﾘ ﾄ ﾘ ------------", 1);
                         printImage(BitmapFactory.decodeResource(getResources(), item.getPrint()));
-                        printText("[無断転載・公開禁止]\nダウンロード期限: 2025年12月31日\n読み取れない時はﾚｼｰﾄに記載の\n連絡先へお問い合わせ下さい\n", 1);
+                        printText("[無断転載・公開禁止]\nダウンロード期限: 2026年5月31日\n読み取れない時はﾚｼｰﾄに記載の\n連絡先へお問い合わせ下さい", 1);
                     }
                 }
             }
@@ -342,63 +361,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void printText(String text, int alignment) {
-        try {
-            sunmiPrinterService.setAlignment(alignment, new InnerResultCallback() {
-                @Override
-                public void onRunResult(boolean isSuccess) throws RemoteException {
-                }
-                @Override
-                public void onReturnString(String result) throws RemoteException {
-                }
-                @Override
-                public void onRaiseException(int code, String msg) throws RemoteException {
-                }
-                @Override
-                public void onPrintResult(int code, String msg) throws RemoteException {
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        };
-        try {
-            sunmiPrinterService.printText(text, new InnerResultCallback() {
-                @Override
-                public void onRunResult(boolean isSuccess) throws RemoteException {
-                }
-                @Override
-                public void onReturnString(String result) throws RemoteException {
-                }
-                @Override
-                public void onRaiseException(int code, String msg) throws RemoteException {
-                }
-                @Override
-                public void onPrintResult(int code, String msg) throws RemoteException {
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        };
+        String[] lines = text.split("\n");
+        for (String line : lines) {
+            textCanvas.drawColor(Color.WHITE);
+            switch (alignment) {
+                case 0:
+                    textPaint.setTextAlign(Paint.Align.LEFT);
+                    textCanvas.drawText(line, 0, textOffset, textPaint);
+                    break;
+                case 1:
+                    textPaint.setTextAlign(Paint.Align.CENTER);
+                    textCanvas.drawText(line, 384 / 2f, textOffset, textPaint);
+                    break;
+                case 2:
+                    textPaint.setTextAlign(Paint.Align.RIGHT);
+                    textCanvas.drawText(line, 384, textOffset, textPaint);
+                    break;
+            }
+            printImage(textBitmap);
+        }
     }
 
     private void printDoubleText(String textLeft, String textRight) {
-        try {
-            sunmiPrinterService.printColumnsText(new String[]{textLeft, textRight}, new int[]{23, 8}, new int[]{0, 2}, new InnerResultCallback() {
-                @Override
-                public void onRunResult(boolean isSuccess) throws RemoteException {
-                }
-                @Override
-                public void onReturnString(String result) throws RemoteException {
-                }
-                @Override
-                public void onRaiseException(int code, String msg) throws RemoteException {
-                }
-                @Override
-                public void onPrintResult(int code, String msg) throws RemoteException {
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        };
+        textCanvas.drawColor(Color.WHITE);
+        textPaint.setTextAlign(Paint.Align.LEFT);
+        textCanvas.drawText(textLeft, 0, textOffset, textPaint);
+        textPaint.setTextAlign(Paint.Align.RIGHT);
+        textCanvas.drawText(textRight, 384, textOffset, textPaint);
+        printImage(textBitmap);
     }
 
     private void printImage(Bitmap bitmap) {
@@ -423,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void printLine() {
-        printText("--------------------------------\n", 1);
+        printText("--------------------------------", 1);
     }
 
     private void feedPaper(int n) {
