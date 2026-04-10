@@ -127,12 +127,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textPaint.setTypeface(typeface);
         textOffset = -textPaint.getFontMetrics().ascent + 2;
 
-        items.add(new Item("SlimDot Volume.6", 100, R.drawable.book, -1));
-        items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, -1));
-        items.add(new Item("もっと! 地下鉄 大名古屋", 100, R.drawable.gamecd, -1));
-        items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞ!!", 500, R.drawable.book, -1));
-        items.add(new Item("異常頒布", 300, R.drawable.book, -1));
-        items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, -1));
+        items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞplus!!", 500, R.drawable.book, R.drawable.qr3));
+        items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, R.drawable.qr2));
+        items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, R.drawable.qr1));
         items.add(new Item("値引 100円", -100, R.drawable.discount, -1));
         items.add(new Item("値引 50円", -50, R.drawable.discount, -1));
 
