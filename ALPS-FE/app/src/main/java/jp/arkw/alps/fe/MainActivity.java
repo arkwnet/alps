@@ -82,7 +82,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MediaPlayer mediaPlayerButton;
     private MediaPlayer mediaPlayerVoice;
 
-    private Typeface typeface;
+    private Typeface typeface1;
+    private Typeface typeface2;
     private Bitmap textBitmap;
     private Canvas textCanvas;
     private Paint textPaint;
@@ -117,19 +118,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mediaPlayerButton = MediaPlayer.create(this, R.raw.button);
         mediaPlayerVoice = MediaPlayer.create(this, R.raw.voice);
 
-        typeface = Typeface.createFromAsset(getAssets(), "JF-Dot-jiskan24h.ttf");
+        typeface1 = Typeface.createFromAsset(getAssets(), "JF-Dot-jiskan24.ttf");
+        typeface2 = Typeface.createFromAsset(getAssets(), "JF-Dot-jiskan24h.ttf");
         textBitmap = Bitmap.createBitmap(384, 32, Bitmap.Config.ARGB_8888);
         textCanvas = new Canvas(textBitmap);
         textPaint = new Paint();
         textPaint.setColor(Color.BLACK);
         textPaint.setTextSize(24f);
         textPaint.setAntiAlias(false);
-        textPaint.setTypeface(typeface);
+        textPaint.setTypeface(typeface1);
         textOffset = -textPaint.getFontMetrics().ascent + 2;
 
-        items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞplus!!", 500, R.drawable.book, R.drawable.qr3));
-        items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, R.drawable.qr2));
-        items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, R.drawable.qr1));
+        items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞplus!!", 500, R.drawable.book, -1));
+        items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, -1));
+        items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, -1));
+        items.add(new Item("もっと! 地下鉄 大名古屋", 100, R.drawable.gamecd, -1));
         items.add(new Item("値引 100円", -100, R.drawable.discount, -1));
         items.add(new Item("値引 50円", -50, R.drawable.discount, -1));
 
@@ -259,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             boolean isMoney = intent.getBooleanExtra("IS_MONEY", false);
             // レシート印刷
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt1));
-            printText("技術書典20\nオフライン出展 (リアル会場) お08", 0);
+            printText("第13回 技術書同人誌博覧会 さ-01", 0);
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt2));
             printText("登録番号 T1810508644593", 2);
             Date date = new Date();
@@ -383,8 +386,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textCanvas.drawColor(Color.WHITE);
         textPaint.setTextAlign(Paint.Align.LEFT);
         textCanvas.drawText(textLeft, 0, textOffset, textPaint);
+        textPaint.setTypeface(typeface2);
         textPaint.setTextAlign(Paint.Align.RIGHT);
         textCanvas.drawText(textRight, 384, textOffset, textPaint);
+        textPaint.setTypeface(typeface1);
         printImage(textBitmap);
     }
 
