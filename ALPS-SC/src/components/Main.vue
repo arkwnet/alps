@@ -2,9 +2,9 @@
 import { ref, onMounted } from 'vue'
 
 const items = ref([
+  { id: 'public-transport-hardoff', name: '公共交通で巡るﾊﾄﾞﾌ全店ｶﾞｲﾄﾞ', price: 500 },
+  { id: 'iroiro-android-plus', name: 'ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞplus!!', price: 500 },
   { id: 'engineer-cn-v3', name: 'ｴﾝｼﾞﾆｱの中国語入門 第3版', price: 300 },
-  { id: 'iroiro-android', name: 'ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞ!!', price: 500 },
-  { id: 'abnormal-distribution', name: '異常頒布', price: 300 },
   { id: 'trainsim-cookbook', name: 'ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ', price: 500 },
 ])
 const isMain = ref(true)
@@ -100,6 +100,26 @@ const onSubmit = async () => {
       無人頒布システムへようこそ!<br />
       説明文をよく読みながら操作してください。
     </p>
+    <div class="alert">
+      <div class="heading">
+        <div class="icon"><img src="../assets/img/alert.svg" /></div>
+        <div class="text">注意事項</div>
+      </div>
+      <div class="contents">
+        <ul>
+          <li>
+            仕様上、売り切れた商品も購入できてしまいます。在庫が机上に残っているか、購入前にご確認ください。
+          </li>
+          <li>
+            お釣りは出ません。あらかじめ頒布価格と同じ額の現金をご用意ください。締め作業に影響が出るため、合計より多く支払わないでください。
+          </li>
+          <li>
+            キャッシュレスなど、日本円以外の支払い方法は無人頒布でご利用になれません。有人頒布の再開をお待ちください。
+          </li>
+        </ul>
+      </div>
+    </div>
+    <br />
     <h1>Step. 1</h1>
     <p>
       購入する頒布物のチェックボックスにチェックを入れてください。<br />
@@ -132,11 +152,7 @@ const onSubmit = async () => {
       <div class="right">￥ {{ total }}</div>
     </div>
     <h1>Step. 2</h1>
-    <p>
-      上記の合計と同じ額の現金を手元に用意してから「購入する」ボタンを押してください。<br />
-      ※ 外貨及びキャッシュレス決済は有人頒布のみご利用いただけます。<br />
-      ※ お釣りは出ません。確認作業に影響が出るため、合計より多い額も入れないでください。
-    </p>
+    <p>上記の「合計」と同じ額の現金を手元に用意してから「購入する」ボタンを押してください。</p>
     <div v-if="isMain">
       <div class="submit" @click="onSubmit">購入する</div>
     </div>
@@ -164,6 +180,38 @@ const onSubmit = async () => {
 
   p {
     margin: 10px 0;
+  }
+
+  .alert {
+    padding: 10px;
+    color: #b71c1c;
+    border: solid 1px #f44336;
+    border-radius: 4px;
+
+    .heading {
+      overflow: hidden;
+
+      .icon {
+        padding-right: 6px;
+        padding-top: 2px;
+        float: left;
+
+        img {
+          height: 24px;
+        }
+      }
+
+      .text {
+        float: left;
+        font-size: 18px;
+      }
+    }
+
+    .contents {
+      ul {
+        padding: 4px 18px;
+      }
+    }
   }
 
   .list {

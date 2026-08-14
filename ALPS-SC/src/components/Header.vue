@@ -1,7 +1,14 @@
+<script setup>
+const version = __APP_VERSION__
+</script>
+
 <template>
   <div class="header">
     <div class="image"><img src="../assets/img/icon.png" /></div>
-    <div class="text">無人頒布システム</div>
+    <div class="text">
+      <div class="title">無人頒布システム</div>
+      <div class="version">Version {{ version }}</div>
+    </div>
   </div>
 </template>
 
@@ -26,8 +33,15 @@
   }
 
   .text {
-    padding: 12px;
-    font-size: 20px;
+    padding: 4px;
+
+    .title {
+      font-size: 20px;
+    }
+
+    .version {
+      color: #9e9e9e;
+    }
   }
 }
 </style>
