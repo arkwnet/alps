@@ -129,9 +129,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textPaint.setTypeface(typeface1);
         textOffset = -textPaint.getFontMetrics().ascent + 2;
 
+        items.add(new Item("公共交通で巡るﾊﾄﾞﾌ全店ｶﾞｲﾄﾞ", 500, R.drawable.book, -1));
         items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞplus!!", 500, R.drawable.book, -1));
         items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, -1));
         items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, -1));
+        items.add(new Item("静岡大学ITS合同誌Vol.1", 1000, R.drawable.book, -1));
         items.add(new Item("もっと! 地下鉄 大名古屋", 100, R.drawable.gamecd, -1));
         items.add(new Item("値引 100円", -100, R.drawable.discount, -1));
         items.add(new Item("値引 50円", -50, R.drawable.discount, -1));
@@ -262,22 +264,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             boolean isMoney = intent.getBooleanExtra("IS_MONEY", false);
             // レシート印刷
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt1));
-            printText("第13回 技術書同人誌博覧会 さ-01", 0);
+            printText("コミックマーケット108", 0, false);
+            printText("2日目(日) 東7ホール W28a", 0, false);
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt2));
-            printText("登録番号 T1810508644593", 2);
+            printText("登録番号 T1810508644593", 2, false);
             Date date = new Date();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd(E) HH:mm");
-            printText("レジ0001 " + simpleDateFormat.format(date), 0);
-            printText("取" + String.format("%04d", id) + " 責: 01 荒川", 0);
-            printText("", 0);
+            printText("レジ0001 " + simpleDateFormat.format(date), 0, false);
+            printText("取" + String.format("%04d", id) + " 責: 01 荒川", 0, false);
+            printText("", 0, false);
             int total = 0;
             for (int i = 0; i < items.size(); i++) {
                 final Item item = items.get(i);
                 if (item.getQuantity() >= 1) {
-                    printText("" + item.getName() + " × " + item.getQuantity(), 0);
+                    printText("" + item.getName() + " × " + item.getQuantity(), 0, false);
                     final int subtotal = item.getPrice() * item.getQuantity();
                     total += subtotal;
-                    printText("" + subtotal, 2);
+                    printText("" + subtotal, 2, true);
                 }
             }
             printLine();
@@ -296,18 +299,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             printDoubleText("お釣り", "￥ " + change);
             printLine();
-            printText("X/Twitter: @arkw0", 0);
-            printText("Misskey: @arkw@mi.arkw.work", 0);
-            printText("Website: https://arkw.net/", 0);
-            printText("E-mail: mail@arkw.net", 0);
+            printText("X/Twitter: @arkw0", 0, false);
+            printText("Misskey: @arkw@mi.arkw.work", 0, false);
+            printText("Website: https://arkw.net/", 0, false);
+            printText("E-mail: mail@arkw.net", 0, false);
             // ダウンロードカードの印刷
             for (int i = 0; i < items.size(); i++) {
                 final Item item = items.get(i);
                 if (item.getQuantity() >= 1) {
-                    if (item.getPrint() != -1 && payment.contains(getResources().getString(R.string.payment_tbf)) == false) {
-                        printText("------------ ｷ ﾘ ﾄ ﾘ ------------", 1);
+                    if (item.getPrint() != -1 && !payment.contains(getResources().getString(R.string.payment_tbf))) {
+                        printText("------------ ｷ ﾘ ﾄ ﾘ ------------", 1, false);
                         printImage(BitmapFactory.decodeResource(getResources(), item.getPrint()));
-                        printText("[無断転載・公開禁止]\nダウンロード期限: 2026年5月31日\n読み取れない時はﾚｼｰﾄに記載の\n連絡先へお問い合わせ下さい", 1);
+                        printText("[無断転載・公開禁止]\nダウンロード期限: 2026年5月31日\n読み取れない時はﾚｼｰﾄに記載の\n連絡先へお問い合わせ下さい", 1, false);
                     }
                 }
             }
@@ -360,7 +363,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void printText(String text, int alignment) {
+    private void printText(String text, int alignment, boolean changeFont) {
+        if (changeFont) {
+            textPaint.setTypeface(typeface2);
+        }
         String[] lines = text.split("\n");
         for (String line : lines) {
             textCanvas.drawColor(Color.WHITE);
@@ -379,6 +385,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
             }
             printImage(textBitmap);
+        }
+        if (changeFont) {
+            textPaint.setTypeface(typeface1);
         }
     }
 
@@ -415,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void printLine() {
-        printText("--------------------------------", 1);
+        printText("--------------------------------", 1, false);
     }
 
     private void feedPaper(int n) {
