@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         items.add(new Item("公共交通で巡るﾊﾄﾞﾌ全店ｶﾞｲﾄﾞ", 500, R.drawable.book, -1));
         items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞplus!!", 500, R.drawable.book, -1));
         items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, -1));
-        items.add(new Item("ﾄﾚｲﾝｼﾐｭﾚｰﾀｸｯｸﾌﾞｯｸ", 500, R.drawable.book, -1));
         items.add(new Item("静岡大学ITS合同誌Vol.1", 1000, R.drawable.book, -1));
         items.add(new Item("もっと! 地下鉄 大名古屋", 100, R.drawable.gamecd, -1));
         items.add(new Item("値引 100円", -100, R.drawable.discount, -1));
@@ -264,8 +263,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             boolean isMoney = intent.getBooleanExtra("IS_MONEY", false);
             // レシート印刷
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt1));
-            printText("コミックマーケット108", 0, false);
-            printText("2日目(日) 東7ホール W28a", 0, false);
+            printText("COMIC BOX #2 海01a", 0, false);
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt2));
             printText("登録番号 T1810508644593", 2, false);
             Date date = new Date();
