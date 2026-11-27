@@ -129,10 +129,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textPaint.setTypeface(typeface1);
         textOffset = -textPaint.getFontMetrics().ascent + 2;
 
-        items.add(new Item("公共交通で巡るﾊﾄﾞﾌ全店ｶﾞｲﾄﾞ", 500, R.drawable.book, -1));
-        items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞplus!!", 500, R.drawable.book, -1));
-        items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, -1));
-        items.add(new Item("もっと! 地下鉄 大名古屋", 100, R.drawable.gamecd, -1));
+        items.add(new Item("公共交通で巡るﾊﾄﾞﾌ全店ｶﾞｲﾄﾞ", 500, R.drawable.book, R.drawable.qr1));
+        items.add(new Item("ｲﾛｲﾛ・ｱﾝﾄﾞﾛｲﾄﾞplus!!", 500, R.drawable.book, R.drawable.qr2));
+        items.add(new Item("ｴﾝｼﾞﾆｱの中国語入門 第3版", 300, R.drawable.book, R.drawable.qr3));
         items.add(new Item("値引 100円", -100, R.drawable.discount, -1));
         items.add(new Item("値引 50円", -50, R.drawable.discount, -1));
 
@@ -262,7 +261,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             boolean isMoney = intent.getBooleanExtra("IS_MONEY", false);
             // レシート印刷
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt1));
-            printText("NT名古屋2026 机番号A6", 0, false);
+            printText("技術書典21", 0, false);
+            printText("オフライン出展 (リアル会場) す13", 0, false);
             printImage(BitmapFactory.decodeResource(getResources(), R.drawable.receipt2));
             printText("登録番号 T1810508644593", 2, false);
             Date date = new Date();
@@ -307,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (item.getPrint() != -1 && !payment.contains(getResources().getString(R.string.payment_tbf))) {
                         printText("------------ ｷ ﾘ ﾄ ﾘ ------------", 1, false);
                         printImage(BitmapFactory.decodeResource(getResources(), item.getPrint()));
-                        printText("[無断転載・公開禁止]\nダウンロード期限: 2026年5月31日\n読み取れない時はﾚｼｰﾄに記載の\n連絡先へお問い合わせ下さい", 1, false);
+                        printText("[無断転載・公開禁止]\nダウンロード期限: 2026年12月31日\n読み取れない時はﾚｼｰﾄに記載の\n連絡先へお問い合わせ下さい", 1, false);
                     }
                 }
             }

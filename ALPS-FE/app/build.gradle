@@ -10,8 +10,8 @@ android {
         applicationId "jp.arkw.alps.fe"
         minSdk 23
         targetSdk 33
-        versionCode 1082
-        versionName "108.2"
+        versionCode 1083
+        versionName "108.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
